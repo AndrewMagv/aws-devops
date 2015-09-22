@@ -1,16 +1,26 @@
 #!/bin/bash
 
 CONFIG=chat-room
+DRYRUN=
 
 while [ $# -gt 0 ]; do
     case ${1} in
         --cfg)
             shift 1; CONFIG=${1}; shift 1
             ;;
+        --dry-run)
+            shift 1; DRYRUN=1
+            ;;
         *)
             ;; # TODO: deprecate default behavior
     esac
 done
+
+if [ ! -z $DRYRUN ]; then
+    echo "s3://devops.magv.com/launch-config/${CONFIG}/ecs-latest.config"
+    aws s3 ls s3://devops.magv.com/launch-config/${CONFIG}/ecs-latest.config
+    exit 0
+fi
 
 # install AWS client utility
 yum install -y aws-cli wget
