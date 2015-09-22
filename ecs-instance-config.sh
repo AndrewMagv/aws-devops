@@ -1,5 +1,17 @@
 #!/bin/bash
 
+CONFIG=chat-room
+
+while [ $# -gt 0 ]; do
+    case ${1} in
+        --cfg)
+            shift 1; CONFIG=${1}; shift 1
+            ;;
+        *)
+            ;; # TODO: deprecate default behavior
+    esac
+done
+
 # install AWS client utility
 yum install -y aws-cli wget
 
@@ -16,4 +28,4 @@ echo NODE_AVAIL_ZONE=$EC2_AVAIL_ZONE >>/etc/environment
 echo NODE_REGION=$EC2_REGION >>/etc/environment
 
 # get the configuration for the ECS agent
-aws s3 cp --region $EC2_REGION s3://devops.magv.com/launch-config/chat-room/ecs-latest.config /etc/ecs/ecs.config
+aws s3 cp --region ${EC2_REGION} s3://devops.magv.com/launch-config/${CONFIG}/ecs-latest.config /etc/ecs/ecs.config
