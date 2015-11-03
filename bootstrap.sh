@@ -12,6 +12,9 @@ while [ $# -gt 0 ]; do
         --swap)
             shift 1; SWAPSIZE=${2}; shift 1
             ;;
+        --up-to-date)
+            shift 1; apt-get update && apt-get upgrade -y;
+            ;;
         --reboot)
             shift 1; REBOOT_NOW="Y"
             ;;
