@@ -3,6 +3,7 @@
 COMMAND="$@"
 USER=
 SWAPSIZE="4G"
+REBOOT_NOW="N"
 while [ $# -gt 0 ]; do
     case ${1} in
         --user)
@@ -11,6 +12,8 @@ while [ $# -gt 0 ]; do
         --swap)
             shift 1; SWAPSIZE=${2}; shift 1
             ;;
+        --reboot)
+            shift 1; REBOOT_NOW="Y"
         *)
             echo "Unexpected option; bootstrap ${COMMAND}"
             echo "USAGE: bootstrap [--user USER --swap SWAPSIZE]"
@@ -49,5 +52,7 @@ echo "net.ipv4.tcp_rmem = 4096 4096 16777216" >>/etc/sysctl.conf
 echo "net.ipv4.tcp_wmem = 4096 4096 16777216" >>/etc/sysctl.conf
 echo "${USER}   -   nofile  999999" >>/etc/security/limits.conf
 
-read -p "System reboot required...(press enter) "
+if [ ${REBOOT_NOW} = "N" ]; then
+    read -p "System reboot required...(press enter) "
+fi
 shutdown -r now
