@@ -2,13 +2,17 @@
 set -ex
 
 COMMAND="$@"
-USER=
+ADMIN=
+ROLE=
 SWAPSIZE="4G"
 REBOOT_NOW="N"
 while [ $# -gt 0 ]; do
     case ${1} in
-        --user)
-            shift 1; USER=${1}; shift 1
+        --adduser)
+            shift 1; ROLE=${1}; useradd ${ROLE}; shift 1
+            ;;
+        --admin)
+            shift 1; ADMIN=${1}; shift 1
             ;;
         --swap)
             shift 1; SWAPSIZE=${1}; shift 1
@@ -21,21 +25,18 @@ while [ $# -gt 0 ]; do
             ;;
         *)
             echo "Unexpected option; bootstrap ${COMMAND}"
-            echo "USAGE: bootstrap [--user USER --swap SWAPSIZE]"
+            echo "USAGE: bootstrap [--admin ADMIN --adduser ROLE --swap SWAPSIZE --up-to-date --reboot]"
             exit 1
             ;;
     esac
 done
-
-# Add user to system
-[ -z ${USER} ] || useradd ${USER}
 
 # Setup docker engine
 apt-key adv --keyserver hkp://pgp.mit.edu:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
 truncate -s0 /etc/apt/sources.list.d/docker.list
 echo "deb https://apt.dockerproject.org/repo ubuntu-trusty main" >>/etc/apt/sources.list.d/docker.list
 apt-get update && apt-get install -y docker-engine
-[ -z ${USER} ] || usermod -aG docker ${USER}
+[ -z ${ADMIN} ] || usermod -aG docker ${ADMIN}
 
 # Setup swap space
 fallocate -l ${SWAPSIZE} /swapfile
@@ -58,7 +59,8 @@ EOF
 echo "fs.file-max = 999999" >>/etc/sysctl.conf
 echo "net.ipv4.tcp_rmem = 4096 4096 16777216" >>/etc/sysctl.conf
 echo "net.ipv4.tcp_wmem = 4096 4096 16777216" >>/etc/sysctl.conf
-echo "${USER}   -   nofile  999999" >>/etc/security/limits.conf
+echo "${ADMIN}  -   nofile  999999" >>/etc/security/limits.conf
+echo "${ROLE}   -   nofile  999999" >>/etc/security/limits.conf
 
 if [ ${REBOOT_NOW} = "N" ]; then
     read -p "System reboot required...(press enter) "
