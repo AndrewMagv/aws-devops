@@ -29,7 +29,7 @@ while [ $# -gt 0 ]; do
 done
 
 # Install admin tool
-apt-get update && apt-get install -y curl htop
+apt-get update && apt-get install -y curl htop lvm2
 
 # Setup docker engine
 apt-key adv --keyserver hkp://pgp.mit.edu:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
