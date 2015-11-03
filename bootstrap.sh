@@ -22,6 +22,9 @@ while [ $# -gt 0 ]; do
     esac
 done
 
+# Add user to system
+[ -z ${USER} ] || useradd ${USER}
+
 # Setup docker engine
 apt-key adv --keyserver hkp://pgp.mit.edu:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
 truncate -s0 /etc/apt/sources.list.d/docker.list
