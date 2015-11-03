@@ -31,6 +31,9 @@ while [ $# -gt 0 ]; do
     esac
 done
 
+# Install admin tool
+apt-get install -y curl htop
+
 # Setup docker engine
 apt-key adv --keyserver hkp://pgp.mit.edu:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
 truncate -s0 /etc/apt/sources.list.d/docker.list
