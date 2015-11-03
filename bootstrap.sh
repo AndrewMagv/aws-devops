@@ -1,4 +1,5 @@
 #!/bin/bash
+set -ex
 
 COMMAND="$@"
 USER=
@@ -10,7 +11,7 @@ while [ $# -gt 0 ]; do
             shift 1; USER=${1}; shift 1
             ;;
         --swap)
-            shift 1; SWAPSIZE=${2}; shift 1
+            shift 1; SWAPSIZE=${1}; shift 1
             ;;
         --up-to-date)
             shift 1; apt-get update && apt-get upgrade -y;
