@@ -14,6 +14,7 @@ while [ $# -gt 0 ]; do
             ;;
         --reboot)
             shift 1; REBOOT_NOW="Y"
+            ;;
         *)
             echo "Unexpected option; bootstrap ${COMMAND}"
             echo "USAGE: bootstrap [--user USER --swap SWAPSIZE]"
