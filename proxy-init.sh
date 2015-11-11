@@ -17,16 +17,6 @@ ln -s /trusted/cert.pem /trusted/${HASHVALUE}.0
 
 URL="https://raw.githubusercontent.com/AndrewMagv/aws-devops/${REF}/tlsproxy"
 while [ $# -gt 0 ]; do
-    case ${1} in
-        redis)
-            curl -sSL ${URL}/redis.conf >>/proxy.conf
-            ;;
-        etcd)
-            curl -sSL ${URL}/etcd.conf >>/proxy.conf
-            ;;
-        *)
-            echo "Unexpected service type: ${1}"
-            ;;
-    esac
+    curl -sSL ${URL}/${1}.conf >>/proxy.conf
     shift 1 # moving along
 done
