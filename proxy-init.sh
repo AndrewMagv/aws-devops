@@ -17,6 +17,6 @@ ln -s /trusted/cert.pem /trusted/${HASHVALUE}.0
 
 URL="https://raw.githubusercontent.com/AndrewMagv/aws-devops/${REF}/tlsproxy"
 while [ $# -gt 0 ]; do
-    curl -sSL ${URL}/${1}.conf >>/proxy.conf
+    curl -sSL ${URL}/${1}.conf >>/proxy.init.conf
     shift 1 # moving along
 done
