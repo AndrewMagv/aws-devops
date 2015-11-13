@@ -29,16 +29,28 @@ while [ $# -gt 0 ]; do
         --thb)
             shift 1; TRANSPARENT_HUGE_PAGE="Y"
             ;;
+        --cluster)
+            shift 1; CLUSTER=${1}; shift 1
+            ;;
+        --username)
+            shift 1; DOCKER_REGISTRY_USER=${1}; shift 1
+            ;;
+        --passwd)
+            shift 1; DOCKER_REGISTRY_PASS=${1}; shift 1
+            ;;
+        --email)
+            shift 1; DOCKER_REGISTRY_EMAIL=${1}; shift 1
+            ;;
         *)
-            echo "Unexpected option; bootstrap ${COMMAND}"
-            echo "USAGE: bootstrap [--admin ADMIN --adduser ROLE --swap SWAPSIZE --reboot --thb]"
+            echo "Unexpected option; bootstrap-ecs-instance ${COMMAND}"
+            echo "USAGE: bootstrap-ecs-instance [--admin ADMIN --adduser ROLE --swap SWAPSIZE --reboot --thb]"
             exit 1
             ;;
     esac
 done
 
 # Install admin tool
-apt-get update && apt-get install -y curl htop lvm2
+yum check-update && yum install -y curl htop lvm2
 
 EC2_INSTANCE_ID="`curl -sSL http://169.254.169.254/latest/meta-data/instance-id`"
 EC2_AVAIL_ZONE="`curl -sSL http://169.254.169.254/latest/meta-data/placement/availability-zone`"
@@ -46,13 +58,6 @@ EC2_REGION="`echo \"${EC2_AVAIL_ZONE}\" | sed -e 's:\([0-9][0-9]*\)[a-z]*\$:\\1:
 echo NODE_NAME=${EC2_INSTANCE_ID} >/etc/environ
 echo NODE_AVAIL_ZONE=${EC2_AVAIL_ZONE} >>/etc/environ
 echo NODE_REGION=${EC2_REGION} >>/etc/environ
-
-# Setup docker engine
-apt-key adv --keyserver hkp://pgp.mit.edu:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
-truncate -s0 /etc/apt/sources.list.d/docker.list
-echo "deb https://apt.dockerproject.org/repo ubuntu-trusty main" >>/etc/apt/sources.list.d/docker.list
-apt-get update && apt-get install -y docker-engine
-[ -z ${ADMIN} ] || usermod -aG docker ${ADMIN}
 
 # Setup swap space
 fallocate -l ${SWAPSIZE} /swapfile
@@ -100,7 +105,7 @@ EOF
 
     chmod 755 /etc/init.d/disable-transparent-hugepages
 
-    update-rc.d disable-transparent-hugepages defaults
+    chkconfig --add disable-transparent-hugepages
 fi
 
 # Adjust server network limit
@@ -111,6 +116,11 @@ echo "net.ipv4.tcp_wmem = 4096 4096 16777216" >>/etc/sysctl.conf
 echo "net.ipv4.tcp_max_syn_backlog = 4096" >>/etc/sysctl.conf
 echo "net.ipv4.tcp_syncookies = 1" >>/etc/sysctl.conf
 echo "net.core.somaxconn = 1024" >>/etc/sysctl.conf
+
+# Seup ecs-agent config
+mkdir -p /etc/ecs/
+curl -sSL https://raw.githubusercontent.com/AndrewMagv/aws-devops/master/ecs.config.tmpl -o /etc/ecs/ecs.config
+sed -i "s_@CLUSTER@_${CLUSTER}_; s_@MYNAME@_${DOCKER_REGISTRY_USER}_; s_@MYPASS@_${DOCKER_REGISTRY_PASS}_; s_@MYEMAIL@_${DOCKER_REGISTRY_EMAIL}_;" /etc/ecs/ecs.config
 
 if [ ${REBOOT_NOW} = "N" ]; then
     read -p "System reboot required...(press enter) "
