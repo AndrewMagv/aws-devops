@@ -6,6 +6,7 @@ ADMIN=
 ROLE=
 SWAPSIZE="4G"
 REBOOT_NOW="N"
+ENVFILE="N"
 TRANSPARENT_HUGE_PAGE="N"
 while [ $# -gt 0 ]; do
     case ${1} in
@@ -29,6 +30,9 @@ while [ $# -gt 0 ]; do
         --thb)
             shift 1; TRANSPARENT_HUGE_PAGE="Y"
             ;;
+        --env)
+            shift 1; ENVFILE="Y"
+            ;;
         *)
             echo "Unexpected option; bootstrap ${COMMAND}"
             echo "USAGE: bootstrap [--admin ADMIN --adduser ROLE --swap SWAPSIZE --reboot --thb]"
@@ -40,12 +44,14 @@ done
 # Install admin tool
 apt-get update && apt-get install -y curl htop lvm2
 
-EC2_INSTANCE_ID="`curl -sSL http://169.254.169.254/latest/meta-data/instance-id`"
-EC2_AVAIL_ZONE="`curl -sSL http://169.254.169.254/latest/meta-data/placement/availability-zone`"
-EC2_REGION="`echo \"${EC2_AVAIL_ZONE}\" | sed -e 's:\([0-9][0-9]*\)[a-z]*\$:\\1:'`"
-echo NODE_NAME=${EC2_INSTANCE_ID} >/etc/environ
-echo NODE_AVAIL_ZONE=${EC2_AVAIL_ZONE} >>/etc/environ
-echo NODE_REGION=${EC2_REGION} >>/etc/environ
+if [ "${ENVFILE}" = "Y" ]; then
+    EC2_INSTANCE_ID="`curl -sSL http://169.254.169.254/latest/meta-data/instance-id`"
+    EC2_AVAIL_ZONE="`curl -sSL http://169.254.169.254/latest/meta-data/placement/availability-zone`"
+    EC2_REGION="`echo \"${EC2_AVAIL_ZONE}\" | sed -e 's:\([0-9][0-9]*\)[a-z]*\$:\\1:'`"
+    echo NODE_NAME=${EC2_INSTANCE_ID} >/etc/environ
+    echo NODE_AVAIL_ZONE=${EC2_AVAIL_ZONE} >>/etc/environ
+    echo NODE_REGION=${EC2_REGION} >>/etc/environ
+fi
 
 # Setup docker engine
 apt-key adv --keyserver hkp://pgp.mit.edu:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
