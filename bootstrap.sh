@@ -1,25 +1,23 @@
 #!/bin/bash
 set -ex
 
+COMPOSE_ROOT_URI="https://raw.githubusercontent.com/AndrewMagv/aws-devops"
+
 COMMAND="$@"
 ADMIN=
 ROLE=
 SWAPSIZE="4G"
 REBOOT_NOW="N"
 ENVFILE="N"
+SERVICE_STACK=
 TRANSPARENT_HUGE_PAGE="N"
 while [ $# -gt 0 ]; do
     case ${1} in
         --adduser)
-            shift 1; ROLE=${1}
-            useradd ${ROLE}
-            echo "${ROLE}   -   nofile  100000" >>/etc/security/limits.conf
-            shift 1
+            shift 1; ROLE=${1}; useradd ${ROLE}; shift 1
             ;;
         --admin)
-            shift 1; ADMIN=${1}
-            echo "${ADMIN}  -   nofile  100000" >>/etc/security/limits.conf
-            shift 1
+            shift 1; ADMIN=${1} shift 1
             ;;
         --swap)
             shift 1; SWAPSIZE=${1}; shift 1
@@ -33,6 +31,8 @@ while [ $# -gt 0 ]; do
         --env)
             shift 1; ENVFILE="Y"
             ;;
+        --stack)
+            shift 1; SERVICE_STACK=${1}; shift 1
         *)
             echo "Unexpected option; bootstrap ${COMMAND}"
             echo "USAGE: bootstrap [--admin ADMIN --adduser ROLE --swap SWAPSIZE --reboot --thb]"
@@ -59,6 +59,11 @@ truncate -s0 /etc/apt/sources.list.d/docker.list
 echo "deb https://apt.dockerproject.org/repo ubuntu-trusty main" >>/etc/apt/sources.list.d/docker.list
 apt-get update && apt-get install -y docker-engine
 [ -z ${ADMIN} ] || usermod -aG docker ${ADMIN}
+
+# Setup docker compose
+DOCKER_COMPOSE="https://github.com/docker/compose/releases/download/1.5.1/docker-compose-`uname -s`-`uname -m`"
+curl -sSL ${DOCKER_COMPOSE} >/usr/local/bin/docker-compose
+chmod +x /usr/local/bin/docker-compose
 
 # Setup swap space
 fallocate -l ${SWAPSIZE} /swapfile
@@ -110,13 +115,25 @@ EOF
 fi
 
 # Adjust server network limit
-echo "fs.file-max = 100000" >>/etc/sysctl.conf
 echo "net.ipv4.ip_local_port_range = 1024 65535" >>/etc/sysctl.conf
 echo "net.ipv4.tcp_rmem = 4096 4096 16777216" >>/etc/sysctl.conf
 echo "net.ipv4.tcp_wmem = 4096 4096 16777216" >>/etc/sysctl.conf
 echo "net.ipv4.tcp_max_syn_backlog = 4096" >>/etc/sysctl.conf
 echo "net.ipv4.tcp_syncookies = 1" >>/etc/sysctl.conf
 echo "net.core.somaxconn = 1024" >>/etc/sysctl.conf
+
+echo "fs.file-max = 100000" >>/etc/sysctl.conf
+echo "* - nofile 100000" >>/etc/security/limits.conf
+
+# Pull and poplate service stack definition
+if [ ! -z ${SERVICE_STACK} ]; then
+    SERVICE_URI="${COMPOSE_ROOT_URI}/master/stack/${SERVICE_STACK}"
+    curl -sSL -O ${SERVICE_URI}/docker-compose.yml
+    curl -sSL -O ${SERVICE_URI}/docker-compose.prod.yml
+
+    export HostIP "`curl -sSL http://169.254.169.254/latest/meta-data/public-ipv4`"
+    docker-compose up -f docker-compose.yml -f docker-compose.prod.yml -d
+fi
 
 if [ ${REBOOT_NOW} = "N" ]; then
     read -p "System reboot required...(press enter) "

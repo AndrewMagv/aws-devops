@@ -1,0 +1,19 @@
+ambassador:
+    command:
+        - '{"net": "tcp", "src": ":6379", "dst": ["10.0.2.232:6379"]}'
+        - '{"net": "tcp", "src": ":2379", "dst": ["10.0.0.253:2379", "10.0.2.96:2379", "10.0.1.38:2379"]}'
+    restart: always
+
+monitor:
+    restart: always
+
+wowza-streaming-engine:
+    restart: always
+
+wowza-streaming-agent:
+    restart: always
+
+logrotate:
+    image: tutum/logrotate
+    volumes:
+        - /var/lib/docker/containers:/var/lib/docker/containers:rw
