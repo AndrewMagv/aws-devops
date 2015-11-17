@@ -3,7 +3,7 @@ ambassador:
     expose:
         - "2379"
         - "6379"
-    image: jeffjen/go-proxy
+    image: jeffjen/go-proxy:v_1
 
 monitor:
     command: "--addr 0.0.0.0:9091 --advertise ${HostIP} etcd://discovery:2379"
