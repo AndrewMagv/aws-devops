@@ -147,8 +147,8 @@ if [ ! -z ${SERVICE_STACK} ]; then
     curl -sSL -O ${SERVICE_URI}/docker-compose.yml
     curl -sSL -O ${SERVICE_URI}/docker-compose.prod.yml
 
-    export HostIP "`curl -sSL http://169.254.169.254/latest/meta-data/public-ipv4`"
-    docker-compose up -f docker-compose.yml -f docker-compose.prod.yml -d
+    export HostIP="`get public-ipv4`"
+    docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
 fi
 
 if [ ${REBOOT_NOW} = "N" ]; then

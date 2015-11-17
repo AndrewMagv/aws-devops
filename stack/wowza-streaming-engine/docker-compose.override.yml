@@ -1,6 +1,11 @@
 ambassador:
     command:
+        - "--proxy"
         - '{"net": "tcp", "src": ":6379", "dst": ["redis:6379"]}'
+        - "--proxy"
         - '{"net": "tcp", "src": ":2379", "dst": ["${DiscoveryHost}:2379"]}'
+        - "--advertise"
+        - "${HostIP}"
+        - "etcd://${DiscoveryHost}:2379"
     external_links:
         - "redis"

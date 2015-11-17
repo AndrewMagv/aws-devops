@@ -3,7 +3,7 @@ ambassador:
     expose:
         - "2379"
         - "6379"
-    image: jeffjen/go-proxy:v_1
+    image: jeffjen/docker-ambassador:v_1
 
 monitor:
     command: "--addr 0.0.0.0:9091 --advertise ${HostIP} etcd://discovery:2379"
@@ -31,7 +31,7 @@ wowza-streaming-engine:
 wowza-streaming-agent:
     command: "--addr 0.0.0.0:20080 --advertise ${HostIP}"
     env_file: /etc/environ
-    image: magvlab/wowza-streaming-agent:v_2
+    image: magvlab/wowza-streaming-agent:v_3
     ports:
         - "20080:20080"
     labels:
