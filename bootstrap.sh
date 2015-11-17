@@ -51,7 +51,7 @@ get() {
 }
 
 # Install admin tool
-apt-get update && apt-get install -y curl htop lvm2
+apt-get update && apt-get install -y curl htop lvm2 ntp
 
 if [ "${ENVFILE}" = "Y" ]; then
     EC2_INSTANCE_ID=`get instance-id`
