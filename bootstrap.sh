@@ -10,6 +10,7 @@ SWAPSIZE="4G"
 REBOOT_NOW="N"
 ENVFILE="N"
 SERVICE_STACK=
+DOCKER_AUTH=
 TRANSPARENT_HUGE_PAGE="N"
 while [ $# -gt 0 ]; do
     case ${1} in
@@ -17,7 +18,7 @@ while [ $# -gt 0 ]; do
             shift 1; ROLE=${1}; useradd ${ROLE}; shift 1
             ;;
         --admin)
-            shift 1; ADMIN=${1} shift 1
+            shift 1; ADMIN=${1}; shift 1
             ;;
         --swap)
             shift 1; SWAPSIZE=${1}; shift 1
@@ -33,6 +34,10 @@ while [ $# -gt 0 ]; do
             ;;
         --stack)
             shift 1; SERVICE_STACK=${1}; shift 1
+            ;;
+        --dockerauth)
+            shift 1; DOCKER_AUTH=${1}; shift 1
+            ;;
         *)
             echo "Unexpected option; bootstrap ${COMMAND}"
             echo "USAGE: bootstrap [--admin ADMIN --adduser ROLE --swap SWAPSIZE --reboot --thb]"
@@ -41,12 +46,16 @@ while [ $# -gt 0 ]; do
     esac
 done
 
+get() {
+    return `curl -sSL --connect-timeout 1 http://169.254.169.254/latest/meta-data/${1} || echo`
+}
+
 # Install admin tool
 apt-get update && apt-get install -y curl htop lvm2
 
 if [ "${ENVFILE}" = "Y" ]; then
-    EC2_INSTANCE_ID="`curl -sSL http://169.254.169.254/latest/meta-data/instance-id`"
-    EC2_AVAIL_ZONE="`curl -sSL http://169.254.169.254/latest/meta-data/placement/availability-zone`"
+    EC2_INSTANCE_ID=`get instance-id`
+    EC2_AVAIL_ZONE="`get placement/availability-zone`"
     EC2_REGION="`echo \"${EC2_AVAIL_ZONE}\" | sed -e 's:\([0-9][0-9]*\)[a-z]*\$:\\1:'`"
     echo NODE_NAME=${EC2_INSTANCE_ID} >/etc/environ
     echo NODE_AVAIL_ZONE=${EC2_AVAIL_ZONE} >>/etc/environ
@@ -64,6 +73,13 @@ apt-get update && apt-get install -y docker-engine
 DOCKER_COMPOSE="https://github.com/docker/compose/releases/download/1.5.1/docker-compose-`uname -s`-`uname -m`"
 curl -sSL ${DOCKER_COMPOSE} >/usr/local/bin/docker-compose
 chmod +x /usr/local/bin/docker-compose
+
+# if Auth is provided, login to docker registry
+# FIXME: better way??
+if [ ! -z ${DOCKER_AUTH} ]; then
+    IFS=';' read -r username pass email <<< "${DOCKER_AUTH}"
+    docker login -e ${email} -u ${username} -p ${pass}
+fi
 
 # Setup swap space
 fallocate -l ${SWAPSIZE} /swapfile
@@ -138,4 +154,6 @@ fi
 if [ ${REBOOT_NOW} = "N" ]; then
     read -p "System reboot required...(press enter) "
 fi
+
+# restart now to load new config
 shutdown -r now
