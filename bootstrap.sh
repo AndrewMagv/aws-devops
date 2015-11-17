@@ -47,7 +47,7 @@ while [ $# -gt 0 ]; do
 done
 
 get() {
-    return `curl -sSL --connect-timeout 1 http://169.254.169.254/latest/meta-data/${1} || echo`
+    curl -sSL --connect-timeout 1 http://169.254.169.254/latest/meta-data/${1} || echo
 }
 
 # Install admin tool
