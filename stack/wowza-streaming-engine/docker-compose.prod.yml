@@ -6,7 +6,7 @@ ambassador:
         - '{"net": "tcp", "src": ":2379", "dst": ["10.0.0.253:2379", "10.0.2.96:2379", "10.0.1.38:2379"]}'
         - "--advertise"
         - "${HostIP}"
-        - "etcd://${DiscoveryHost}:2379"
+        - "etcd://10.0.0.253:2379,10.0.2.96:2379,10.0.1.38:2379"
     restart: always
 
 monitor:
@@ -20,5 +20,6 @@ wowza-streaming-agent:
 
 logrotate:
     image: tutum/logrotate
+    restart: always
     volumes:
         - /var/lib/docker/containers:/var/lib/docker/containers:rw
