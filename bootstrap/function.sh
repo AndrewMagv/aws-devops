@@ -114,7 +114,7 @@ while ! docker info &>/dev/null; do sleep 3; done
 docker run -d --restart=always --name ambassador \
     --env-file /etc/environment \
     -p 127.0.0.1:29091:29091 \
-    jeffjen/docker-ambassador:v_3 \
+    jeffjen/docker-ambassador:v_6 \
         --addr 0.0.0.0:29091 \
         --advertise ${EC2_PUBLIC_IPV4} \
         --proxy '{"net": "tcp", "src": ":2379", "dst": ["10.0.0.253:2379", "10.0.2.96:2379", "10.0.1.38:2379"]}' \
@@ -124,7 +124,7 @@ docker run -d --restart=always --name agent --link ambassador:discovery \
     --env-file /etc/environment \
     -p 127.0.0.1:29092:29092 \
     -v /var/run/docker.sock:/var/run/docker.sock \
-    jeffjen/docker-monitor:v_18 \
+    jeffjen/docker-monitor:v_22 \
         --addr 0.0.0.0:29092 \
         --prefix ${CLUSTER}/docker/swarm/nodes \
         --advertise ${EC2_PRIVAITE_IPV4}:2375 \

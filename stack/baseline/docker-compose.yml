@@ -1,13 +1,13 @@
 ambassador:
     env_file: /etc/environ
-    image: jeffjen/docker-ambassador:v_3
+    image: jeffjen/docker-ambassador:v_6
     ports:
         - "127.0.0.1:29091:29091"
 
 agent:
     command: "--addr 0.0.0.0:29092 --prefix /${cluster}/docker/swarm/nodes --advertise ${HostIP}:2375 etcd://discovery:2379"
     env_file: /etc/environ
-    image: jeffjen/docker-monitor:v_18
+    image: jeffjen/docker-monitor:v_22
     links:
         - ambassador:discovery
     ports:

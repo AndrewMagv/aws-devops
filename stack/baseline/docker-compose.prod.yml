@@ -3,7 +3,7 @@ ambassador:
         - "--addr"
         - "0.0.0.0:29091"
         - "--advertise"
-        - "${HostIP}"
+        - "${HostIP}:2375"
         - "--proxy"
         - '{"net": "tcp", "src": ":6379", "dst": ["10.0.2.232:6379"]}'
         - "--proxy"
