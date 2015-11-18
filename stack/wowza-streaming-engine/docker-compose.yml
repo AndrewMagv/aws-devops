@@ -1,28 +1,10 @@
-ambassador:
-    env_file: /etc/environ
-    expose:
-        - "2379"
-        - "6379"
-    image: jeffjen/docker-ambassador:v_1
-
-monitor:
-    command: "--addr 0.0.0.0:9091 --advertise ${HostIP} etcd://discovery:2379"
-    env_file: /etc/environ
-    image: jeffjen/docker-monitor:v_16
-    links:
-        - ambassador:discovery
-    ports:
-        - "127.0.0.1:9091:9091"
-    volumes:
-        - /var/run/docker.sock:/var/run/docker.sock
-
 wowza-streaming-engine:
     image: magvlab/wowza-streaming-engine:v1
     labels:
         service: /srv/wowza/live/engine
         port: "80"
-    links:
-        - monitor
+    external_links:
+        - agent
     ports:
         - "80:80"
         - "443:443"
@@ -37,6 +19,6 @@ wowza-streaming-agent:
     labels:
         service: /srv/wowza/live/agent
         port: "20080"
-    links:
+    external_links:
         - ambassador:localhost
-        - monitor
+        - agent
