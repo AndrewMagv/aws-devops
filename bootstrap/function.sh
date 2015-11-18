@@ -111,6 +111,10 @@ launch-agents() {
 # FIXME: better way to confirm docker daemon started
 while ! docker info &>/dev/null; do sleep 3; done
 
+docker run -d --restart=always --name logrotate \
+    -v /var/lib/docker/containers:/var/lib/docker/containers:rw \
+    tutum/logrotate
+
 docker run -d --restart=always --name ambassador \
     --env-file /etc/environment \
     -p 127.0.0.1:29091:29091 \
