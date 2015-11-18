@@ -34,6 +34,8 @@ if [ -x /sbin/pvcreate ] && [ ! -z ${dev} ]; then
 fi
 truncate -s0 /etc/default/docker
 echo DOCKER_OPTS="\"${host_bind} ${storage_opts}\"" >>/etc/default/docker
+
+service docker start
 }
 
 config-swap() {
@@ -103,4 +105,28 @@ config-ecs() {
 mkdir -p /etc/ecs/
 curl -sSL ${DEVOPS_URI}/ecs.config.tmpl -o /etc/ecs/ecs.config
 sed -i "s_@CLUSTER@_${CLUSTER}_; s_@MYNAME@_${DOCKER_REGISTRY_USER}_; s_@MYPASS@_${DOCKER_REGISTRY_PASS}_; s_@MYEMAIL@_${DOCKER_REGISTRY_EMAIL}_;" /etc/ecs/ecs.config
+}
+
+launch-agents() {
+# FIXME: better way to confirm docker daemon started
+while ! docker info &>/dev/null; do sleep 3; done
+
+docker run -d --restart=always --name ambassador \
+    --env-file /etc/environment \
+    -p 127.0.0.1:29091:29091 \
+    jeffjen/docker-ambassador:v_1 \
+        --addr 0.0.0.0:29091 \
+        --advertise ${EC2_PUBLIC_IPV4} \
+        --proxy '{"net": "tcp", "src": ":2379", "dst": ["10.0.0.253:2379", "10.0.2.96:2379", "10.0.1.38:2379"]}' \
+        etcd://10.0.0.253:2379,10.0.2.96:2379,10.0.1.38:2379
+
+docker run -d --restart=always --name agent --link ambassador:discovery \
+    --env-file /etc/environment \
+    -p 127.0.0.1:29092:29092 \
+    -v /var/run/docker.sock:/var/run/docker.sock \
+    jeffjen/docker-monitor:v_16 \
+        --addr 0.0.0.0:29092 \
+        --prefix /docker/swarm/nodes/${CLUSTER} \
+        --advertise ${EC2_PRIVAITE_IPV4}:2375 \
+        etcd://discovery:2379
 }
