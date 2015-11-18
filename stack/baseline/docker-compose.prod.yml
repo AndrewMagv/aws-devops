@@ -13,3 +13,6 @@ ambassador:
 
 monitor:
     restart: always
+
+logrotate:
+    restart: always

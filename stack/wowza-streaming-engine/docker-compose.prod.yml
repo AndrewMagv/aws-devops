@@ -1,11 +1,9 @@
 wowza-streaming-engine:
+    external_links:
+        - ambassador:localhost
     restart: always
 
 wowza-streaming-agent:
+    external_links:
+        - ambassador:localhost
     restart: always
-
-logrotate:
-    image: tutum/logrotate
-    restart: always
-    volumes:
-        - /var/lib/docker/containers:/var/lib/docker/containers:rw

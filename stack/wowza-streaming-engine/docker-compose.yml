@@ -3,22 +3,18 @@ wowza-streaming-engine:
     labels:
         service: /srv/wowza/live/engine
         port: "80"
-    external_links:
-        - agent
     ports:
         - "80:80"
         - "443:443"
         - "1935:1935"
 
 wowza-streaming-agent:
-    command: "--addr 0.0.0.0:20080 --advertise ${HostIP}"
-    env_file: /etc/environ
-    image: magvlab/wowza-streaming-agent:v_3
+    command: "--addr 0.0.0.0:20080"
+    image: magvlab/wowza-streaming-agent:v_9
     ports:
         - "20080:20080"
     labels:
         service: /srv/wowza/live/agent
         port: "20080"
-    external_links:
-        - ambassador:localhost
-        - agent
+    links:
+        - wowza-streaming-engine

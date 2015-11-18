@@ -1,0 +1,7 @@
+wowza-streaming-engine:
+    external_links:
+        - livestream_ambassador_1:localhost
+
+wowza-streaming-agent:
+    external_links:
+        - livestream_ambassador_1:localhost
