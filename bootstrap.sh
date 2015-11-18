@@ -10,7 +10,6 @@ apt-get update && apt-get install -y curl htop lvm2 ntp
 eval "`curl -sSL ${DEVOPS_URI}/bootstrap/function.sh`"
 
 COMMAND="$@"
-ADMIN=
 ROLE=
 SWAPSIZE="4G"
 REBOOT_NOW="N"
@@ -20,9 +19,6 @@ while [ $# -gt 0 ]; do
     case ${1} in
         --adduser)
             shift 1; ROLE=${1}; useradd ${ROLE}; shift 1
-            ;;
-        --admin)
-            shift 1; ADMIN=${1}; shift 1
             ;;
         --swap)
             shift 1; SWAPSIZE=${1}; shift 1

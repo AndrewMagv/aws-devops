@@ -6,19 +6,35 @@ curl -sSL --connect-timeout 1 http://169.254.169.254/latest/meta-data/${1} || ec
 
 get-docker-engine() {
 # Setup docker engine
-apt-key adv --keyserver hkp://pgp.mit.edu:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
 truncate -s0 /etc/apt/sources.list.d/docker.list
+apt-key adv --keyserver hkp://pgp.mit.edu:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
 echo "deb https://apt.dockerproject.org/repo ubuntu-trusty main" >>/etc/apt/sources.list.d/docker.list
 apt-get update && apt-get install -y docker-engine
-[ -z ${ADMIN} ] || usermod -aG docker ${ADMIN}
 }
 
 config-docker-engine() {
+service docker stop
 truncate -s0 /etc/default/docker
-echo DOCKER_OPTS="\"-H unix:///var/run/docker.sock -H tcp://0.0.0.0:2375\"" >>/etc/default/docker
-# FIXME: we do not want conflict names in docker swarm if docker daemon is
-# preinstalled
-[ -e /etc/docker/key.json ] && rm /etc/docker/key.json
+
+# FIXME: we do not want conflict names in docker swarm if docker daemon is preinstalled
+[ -e /etc/docker/key.json ] && rm -f /etc/docker/key.json
+
+host_bind="-H unix:///var/run/docker.sock -H tcp://0.0.0.0:2375"
+storage_opts=
+if [ -x /sbin/pvcreate ]; then
+
+    [ -d /var/lib/docker ] && rm -rf /var/lib/docker
+
+    # Setup thin pool NOTE: prefer the first available spare disk
+    dev=`lsblk | grep disk | sed -n '2p' | awk '{print $1}'`
+    pvcreate /dev/${dev}
+    vgcreate vg-docker /dev/${dev}
+    lvcreate -l 90%FREE -n data vg-docker
+    lvcreate -l 10%FREE -n metadata vg-docker
+    # Setup DOCKER_OPTS
+    storage_opts="--storage-driver=devicemapper --storage-opt dm.datadev=/dev/vg-docker/data --storage-opt dm.metadatadev=/dev/vg-docker/metadata"
+fi
+echo DOCKER_OPTS="\"${host_bind} ${storage_opts}\"" >>/etc/default/docker
 }
 
 config-swap() {
