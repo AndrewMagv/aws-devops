@@ -70,7 +70,7 @@ config-swap
 config-docker-engine
 
 # Launch baseline management containers
-launch-agent
+launch-agents
 
 if [ ${REBOOT_NOW} = "N" ]; then
     read -p "System reboot required...(press enter) "
