@@ -9,6 +9,8 @@ apt-get update && apt-get install -y curl htop lvm2 ntp
 # source utility file
 eval "`curl -sSL ${DEVOPS_URI}/bootstrap/function.sh`"
 
+AMBASSADOR_VERION=latest
+AGENT_VERION=latest
 COMMAND="$@"
 ROLE=
 SWAPSIZE="4G"
@@ -34,6 +36,12 @@ while [ $# -gt 0 ]; do
             ;;
         --cluster)
             shift 1; CLUSTER=${1}; shift 1
+            ;;
+        --ambassador)
+            shift 1; AMBASSADOR_VERION=${1}; shift 1
+            ;;
+        --agent)
+            shift 1; AGENT_VERION=${1}; shift 1
             ;;
         *)
             echo "Unexpected option; bootstrap ${COMMAND}"
