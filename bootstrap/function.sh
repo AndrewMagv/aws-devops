@@ -14,19 +14,17 @@ apt-get update && apt-get install -y docker-engine
 
 config-docker-engine() {
 service docker stop
-truncate -s0 /etc/default/docker
 
 # FIXME: we do not want conflict names in docker swarm if docker daemon is preinstalled
 [ -e /etc/docker/key.json ] && rm -f /etc/docker/key.json
 
+# NOTE: prefer the first available spare disk
+dev=`lsblk | grep disk | sed -n '2p' | awk '{print $1}'`
 host_bind="-H unix:///var/run/docker.sock -H tcp://0.0.0.0:2375"
 storage_opts=
-if [ -x /sbin/pvcreate ]; then
 
+if [ -x /sbin/pvcreate ] && [ ! -z ${dev} ]; then
     [ -d /var/lib/docker ] && rm -rf /var/lib/docker
-
-    # Setup thin pool NOTE: prefer the first available spare disk
-    dev=`lsblk | grep disk | sed -n '2p' | awk '{print $1}'`
     pvcreate /dev/${dev}
     vgcreate vg-docker /dev/${dev}
     lvcreate -l 90%FREE -n data vg-docker
@@ -34,6 +32,7 @@ if [ -x /sbin/pvcreate ]; then
     # Setup DOCKER_OPTS
     storage_opts="--storage-driver=devicemapper --storage-opt dm.datadev=/dev/vg-docker/data --storage-opt dm.metadatadev=/dev/vg-docker/metadata"
 fi
+truncate -s0 /etc/default/docker
 echo DOCKER_OPTS="\"${host_bind} ${storage_opts}\"" >>/etc/default/docker
 }
 
