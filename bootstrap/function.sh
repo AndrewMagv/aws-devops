@@ -13,6 +13,14 @@ apt-get update && apt-get install -y docker-engine
 [ -z ${ADMIN} ] || usermod -aG docker ${ADMIN}
 }
 
+config-docker-engine() {
+truncate -s0 /etc/default/docker
+echo DOCKER_OPTS="\"-H unix:///var/run/docker.sock -H tcp://0.0.0.0:2375\"" >>/etc/default/docker
+# FIXME: we do not want conflict names in docker swarm if docker daemon is
+# preinstalled
+[ -e /etc/docker/key.json ] && rm /etc/docker/key.json
+}
+
 config-swap() {
 swapoff -a -v
 # Setup swap space

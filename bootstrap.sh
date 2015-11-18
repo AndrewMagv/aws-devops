@@ -70,6 +70,9 @@ config-swap
 # Install docker
 [ -x /usr/bin/docker ] || get-docker-engine
 
+# Configure docker engine
+config-docker-engine
+
 if [ ${REBOOT_NOW} = "N" ]; then
     read -p "System reboot required...(press enter) "
 fi
