@@ -1,9 +1,0 @@
-wowza-streaming-engine:
-    external_links:
-        - ambassador:localhost
-    restart: always
-
-wowza-streaming-agent:
-    external_links:
-        - ambassador:localhost
-    restart: always
