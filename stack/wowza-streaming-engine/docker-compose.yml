@@ -1,4 +1,19 @@
+wowza-streaming-agent:
+    command: "--addr 0.0.0.0:20080"
+    external_links:
+        - ambassador:localhost
+    image: magvlab/wowza-streaming-agent:v_9
+    labels:
+        service: /srv/wowza/live/agent
+        port: "20080"
+        proxy: '[{"net": "tcp", "src": ":6379", "dst": ["10.0.2.232:6379"]}]'
+    ports:
+        - "20080:20080"
+    restart: always
+
 wowza-streaming-engine:
+    external_links:
+        - ambassador:localhost
     image: magvlab/wowza-streaming-engine:v1
     labels:
         service: /srv/wowza/live/engine
@@ -7,14 +22,4 @@ wowza-streaming-engine:
         - "80:80"
         - "443:443"
         - "1935:1935"
-
-wowza-streaming-agent:
-    command: "--addr 0.0.0.0:20080"
-    image: magvlab/wowza-streaming-agent:v_9
-    ports:
-        - "20080:20080"
-    labels:
-        service: /srv/wowza/live/agent
-        port: "20080"
-    links:
-        - wowza-streaming-engine
+    restart: always
