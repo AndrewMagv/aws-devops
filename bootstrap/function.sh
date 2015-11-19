@@ -124,7 +124,7 @@ docker run -d --restart=always --name ambassador \
         --proxy '{"net": "tcp", "src": ":2379", "dst": ["10.0.0.253:2379", "10.0.2.96:2379", "10.0.1.38:2379"]}' \
         etcd://10.0.0.253:2379,10.0.2.96:2379,10.0.1.38:2379
 
-docker run -d --restart=always --name agent --link ambassador:discovery \
+docker run -d --restart=always --name agent --link ambassador:discovery --link ambassador:localhost \
     --env-file /etc/environment \
     -p 127.0.0.1:29092:29092 \
     -v /var/run/docker.sock:/var/run/docker.sock \
