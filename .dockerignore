@@ -1,0 +1,8 @@
+.git
+.gitignore
+
+etcdctl
+etcd-v2.2.1-linux-amd64
+etcd-v2.2.1-linux-amd64.tar.gz
+
+Dockerfile
