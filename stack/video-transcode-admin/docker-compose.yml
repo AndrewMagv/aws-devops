@@ -1,0 +1,12 @@
+video-transcode-admin:
+    command: "tcp://0.0.0.0:80"
+    external_links:
+        - ambassador:localhost
+    image: magvlab/video-transcode-admin:v_88
+    labels:
+        service: /srv/video-transcode-admin/main
+        port: "80"
+        proxy: '[{"net": "tcp", "src": ":6379", "srv": "/srv/redis/video-transcode-admin"}]'
+    ports:
+        - "80:80"
+    restart: always

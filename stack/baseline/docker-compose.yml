@@ -1,6 +1,6 @@
 ambassador:
     env_file: /etc/environ
-    image: jeffjen/docker-ambassador:v_13
+    image: jeffjen/docker-ambassador:v_19
     ports:
         - "127.0.0.1:29091:29091"
 
