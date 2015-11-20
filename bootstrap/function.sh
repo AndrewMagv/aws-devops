@@ -1,7 +1,7 @@
 #!/bin/bash
 
 get() {
-curl -sSL --connect-timeout 1 http://169.254.169.254/latest/meta-data/${1} || echo
+curl -sSL -f --connect-timeout 1 http://169.254.169.254/latest/meta-data/${1} || echo
 }
 
 get-docker-engine() {
@@ -108,6 +108,24 @@ sed -i "s_@CLUSTER@_${CLUSTER}_; s_@MYNAME@_${DOCKER_REGISTRY_USER}_; s_@MYPASS@
 }
 
 launch-agents() {
+AmassadorIP=
+if [ -z ${EC2_PUBLIC_IPV4}]; then
+    if [ -z ${EC2_PRIVAITE_IPV4} ]; then
+        AmassadorIP="127.0.0.1"
+    else
+        AmassadorIP=${EC2_PRIVAITE_IPV4}
+    fi
+else
+    AmassadorIP=${EC2_PUBLIC_IPV4}
+fi
+
+AgentIP=
+if [ -z ${EC2_PRIVAITE_IPV4} ]; then
+    AgentIP="127.0.0.1"
+else
+    AgentIP=${EC2_PRIVAITE_IPV4}
+fi
+
 # FIXME: better way to confirm docker daemon started
 while ! docker info &>/dev/null; do sleep 3; done
 
@@ -120,7 +138,7 @@ docker run -d --restart=always --name ambassador \
     -p 127.0.0.1:29091:29091 \
     jeffjen/docker-ambassador:${AMBASSADOR_VERION} \
         --addr 0.0.0.0:29091 \
-        --advertise ${EC2_PUBLIC_IPV4} \
+        --advertise ${AmassadorIP} \
         --proxy '{"net": "tcp", "src": ":2379", "dst": ["10.0.0.253:2379", "10.0.2.96:2379", "10.0.1.38:2379"]}' \
         etcd://10.0.0.253:2379,10.0.2.96:2379,10.0.1.38:2379
 
@@ -131,6 +149,6 @@ docker run -d --restart=always --name agent --link ambassador:discovery --link a
     jeffjen/docker-monitor:${AGENT_VERION} \
         --addr 0.0.0.0:29092 \
         --prefix ${CLUSTER}/docker/swarm/nodes \
-        --advertise ${EC2_PRIVAITE_IPV4}:2375 \
+        --advertise ${AgentIP}:2375 \
         etcd://discovery:2379
 }
