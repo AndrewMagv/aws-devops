@@ -1,6 +1,17 @@
 ambassador:
+    command:
+        - "--addr"
+        - "0.0.0.0:29091"
+        - "--advertise"
+        - "10.0.2.15"
+        - "--proxy"
+        - '{"net": "tcp", "src": ":2379", "dst": ["10.0.2.15:2379"]}'
+        - "etcd://10.0.2.15:2379"
     env_file: /etc/environ
-    image: jeffjen/docker-ambassador:v_19
+    environment:
+        LOG_LEVEL: DEBUG
+    image: jeffjen/docker-ambassador:v_21
+    mem_limit: 128000000
     ports:
         - "127.0.0.1:29091:29091"
 
@@ -9,15 +20,16 @@ agent:
         - "--addr"
         - "0.0.0.0:29092"
         - "--advertise"
-        - "${HostIP}:2375"
+        - "10.0.2.15:2375"
         - "--prefix"
-        - "/${cluster}/docker/swarm/nodes"
+        - "/debug/docker/swarm/nodes"
         - "etcd://discovery:2379"
     env_file: /etc/environ
-    image: jeffjen/docker-monitor:v_28
+    image: jeffjen/docker-monitor:v_29
     links:
         - ambassador:discovery
         - ambassador:localhost
+    mem_limit: 128000000
     ports:
         - "127.0.0.1:29092:29092"
     volumes:
