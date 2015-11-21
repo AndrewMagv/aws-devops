@@ -51,7 +51,7 @@ config-system() {
 truncate -s0 /etc/sysctl.conf
 echo "vm.overcommit_memory = 1" >>/etc/sysctl.conf
 if [ ${TRANSPARENT_HUGE_PAGE} = "N" ]; then
-    cat <<EOF >/etc/init.d/disable-transparent-hugepages
+    cat <<\EOF >/etc/init.d/disable-transparent-hugepages
 #!/bin/sh
 ### BEGIN INIT INFO
 # Provides:          disable-transparent-hugepages
