@@ -2,7 +2,7 @@ video-transcode-admin:
     command: "tcp://0.0.0.0:80"
     external_links:
         - ambassador:localhost
-    image: magvlab/video-transcode-admin:v_88
+    image: magvlab/video-transcode-admin:v_89
     labels:
         service: /srv/video-transcode-admin/main
         port: "80"
