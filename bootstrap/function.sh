@@ -36,6 +36,13 @@ truncate -s0 /etc/default/docker
 echo DOCKER_OPTS="\"${host_bind} ${storage_opts}\"" >>/etc/default/docker
 
 service docker start
+
+# FIXME: better way to confirm docker daemon started
+while ! docker info &>/dev/null; do sleep 3; done
+
+docker run -d --restart=always --name logrotate \
+    -v /var/lib/docker/containers:/var/lib/docker/containers:rw \
+    tutum/logrotate
 }
 
 config-swap() {
@@ -125,13 +132,6 @@ if [ -z ${EC2_PRIVAITE_IPV4} ]; then
 else
     AgentIP=${EC2_PRIVAITE_IPV4}
 fi
-
-# FIXME: better way to confirm docker daemon started
-while ! docker info &>/dev/null; do sleep 3; done
-
-docker run -d --restart=always --name logrotate \
-    -v /var/lib/docker/containers:/var/lib/docker/containers:rw \
-    tutum/logrotate
 
 docker run -d --restart=always --name ambassador -m 128M \
     --env-file /etc/environment \

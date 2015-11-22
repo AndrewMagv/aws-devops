@@ -11,6 +11,7 @@ eval "`curl -sSL ${DEVOPS_URI}/bootstrap/function.sh`"
 
 AMBASSADOR_VERION=latest
 AGENT_VERION=latest
+CLUSTER=
 COMMAND="$@"
 ROLE=
 SWAPSIZE="4G"
@@ -78,7 +79,7 @@ config-swap
 config-docker-engine
 
 # Launch baseline management containers
-launch-agents
+[ -z ${CLUSTER} ] || launch-agents
 
 if [ ${REBOOT_NOW} = "N" ]; then
     read -p "System reboot required...(press enter) "
