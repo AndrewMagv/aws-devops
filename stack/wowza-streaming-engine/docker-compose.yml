@@ -1,4 +1,4 @@
-wowza-streaming-agent:
+agent:
     command: "--addr 0.0.0.0:20080"
     external_links:
         - "ambassador:localhost"
@@ -11,7 +11,7 @@ wowza-streaming-agent:
         - "20080:20080"
     restart: always
 
-wowza-streaming-engine:
+engine:
     external_links:
         - "ambassador:localhost"
     image: magvlab/wowza-streaming-engine:v1
