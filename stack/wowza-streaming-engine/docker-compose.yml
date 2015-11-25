@@ -14,7 +14,7 @@ agent:
 engine:
     external_links:
         - "ambassador:localhost"
-    image: magvlab/wowza-streaming-engine:v1
+    image: magvlab/wowza-streaming-engine:v_2
     labels:
         service: /srv/wowza/live/engine
         port: "80"
