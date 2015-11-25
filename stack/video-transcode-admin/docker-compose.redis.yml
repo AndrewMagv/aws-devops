@@ -1,0 +1,7 @@
+redis:
+    image: redis
+    labels:
+        service: /srv/redis/video-transcode-admin
+        port: "6379"
+    ports:
+        - "6379:6379"

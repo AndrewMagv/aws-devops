@@ -3,6 +3,7 @@ MAINTAINER YI-HUNG JEN <yihungjen@gmail.com>
 
 RUN apt-get update && apt-get install -y \
     curl \
+    python \
     socat \
     telnet \
     vim \
@@ -25,6 +26,12 @@ ENV DOCKER_CERT_PATH ""
 COPY etcdctl /usr/local/bin/etcdctl
 
 ENV ETCDCTL_ENDPOINT ""
+
+# install package manager for python
+RUN curl -sSL https://bootstrap.pypa.io/get-pip.py | python -
+
+# install common python packages
+RUN pip install awscli virtualenv
 
 # install command line json parser
 RUN curl -sSL http://stedolan.github.io/jq/download/linux64/jq -o /usr/local/bin/jq
