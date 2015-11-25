@@ -56,12 +56,14 @@ done
 if [ "${ENVFILE}" = "Y" ]; then
     EC2_INSTANCE_ID=`get instance-id`
     EC2_AVAIL_ZONE="`get placement/availability-zone`"
+    EC2_PUBLIC_HOSTNAME="`get public-hostname`"
     EC2_PUBLIC_IPV4="`get public-ipv4`"
     EC2_PRIVAITE_IPV4=`get local-ipv4`
     EC2_REGION="`echo \"${EC2_AVAIL_ZONE}\" | sed -e 's:\([0-9][0-9]*\)[a-z]*\$:\\1:'`"
     echo NODE_NAME=${EC2_INSTANCE_ID} >>/etc/environment
     echo NODE_AVAIL_ZONE=${EC2_AVAIL_ZONE} >>/etc/environment
     echo NODE_REGION=${EC2_REGION} >>/etc/environment
+    echo NODE_PUBLIC_HOSTNAME=${EC2_PUBLIC_HOSTNAME} >>/etc/environment
     echo NODE_PUBLIC_IPV4=${EC2_PUBLIC_IPV4} >>/etc/environment
     echo NODE_PRIVATE_IPV4=${EC2_PRIVAITE_IPV4} >>/etc/environment
 fi
