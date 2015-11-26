@@ -1,4 +1,5 @@
 ambassador:
+    container_name: ambassador
     command:
         - "--addr"
         - "0.0.0.0:29091"
@@ -16,7 +17,9 @@ ambassador:
         - "127.0.0.1:29091:29091"
 
 agent:
+    container_name: agent
     command:
+        - "--persist"
         - "--addr"
         - "0.0.0.0:29092"
         - "--advertise"
@@ -34,8 +37,4 @@ agent:
         - "127.0.0.1:29092:29092"
     volumes:
         - /var/run/docker.sock:/var/run/docker.sock
-
-logrotate:
-    image: tutum/logrotate
-    volumes:
-        - /var/lib/docker/containers:/var/lib/docker/containers:rw
+        - /tmp:/tmp
