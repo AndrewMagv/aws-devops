@@ -2,7 +2,7 @@ agent:
     command: "--addr 0.0.0.0:20080"
     external_links:
         - "ambassador:localhost"
-    image: magvlab/wowza-streaming-agent:v_9
+    image: magvlab/wowza-streaming-agent:v_10
     labels:
         service: /srv/wowza/live/agent
         port: "20080"
