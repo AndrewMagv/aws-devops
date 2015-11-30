@@ -139,7 +139,7 @@ docker run -d --restart=always --name ambassador -m 128M \
     jeffjen/docker-ambassador:${AMBASSADOR_VERION} \
         --addr 0.0.0.0:29091 \
         --advertise ${AmassadorIP} \
-        --proxy '{"net": "tcp", "src": ":2379", "dst": ["10.0.0.253:2379", "10.0.2.185:2379", "10.0.1.38:2379"]}' \
+        --proxy '{"name": "discovery", "net": "tcp", "src": ":2379", "dst": ["10.0.0.253:2379", "10.0.2.185:2379", "10.0.1.38:2379"]}' \
         etcd://10.0.0.253:2379,10.0.2.96:2379,10.0.1.38:2379
 
 docker run -d --restart=always --name agent -m 128M --link ambassador:discovery --link ambassador:localhost \
