@@ -138,8 +138,8 @@ docker run -d --restart=always --name ambassador -m 128M \
     -p 29091:29091 \
     jeffjen/docker-ambassador:${AMBASSADOR_VERION} \
         --addr 0.0.0.0:29091 \
-        --advertise ${AmassadorIP}:29091 \
         --prefix ${CLUSTER}/docker/ambassador/nodes \
+        --advertise ${AmassadorIP}:29091 \
         --proxy '{"name": "discovery", "net": "tcp", "src": ":2379", "dst": ["10.0.0.253:2379", "10.0.2.185:2379", "10.0.1.38:2379"]}' \
         etcd://10.0.0.253:2379,10.0.2.96:2379,10.0.1.38:2379
 
