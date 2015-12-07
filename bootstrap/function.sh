@@ -135,7 +135,7 @@ fi
 
 docker run -d --restart=always --name ambassador -m 128M \
     --env-file /etc/environment \
-    -p 127.0.0.1:29091:29091 \
+    -p 29091:29091 \
     jeffjen/docker-ambassador:${AMBASSADOR_VERION} \
         --addr 0.0.0.0:29091 \
         --advertise ${AmassadorIP} \
@@ -144,7 +144,7 @@ docker run -d --restart=always --name ambassador -m 128M \
 
 docker run -d --restart=always --name agent -m 128M --link ambassador:discovery --link ambassador:localhost \
     --env-file /etc/environment \
-    -p 127.0.0.1:29092:29092 \
+    -p 29092:29092 \
     -v /var/run/docker.sock:/var/run/docker.sock \
     jeffjen/docker-monitor:${AGENT_VERION} \
         --addr 0.0.0.0:29092 \
