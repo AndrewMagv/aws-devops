@@ -11,7 +11,7 @@ ambassador:
     env_file: /etc/environ
     environment:
         LOG_LEVEL: DEBUG
-    image: jeffjen/docker-ambassador:v_25
+    image: jeffjen/docker-ambassador:v_28
     mem_limit: 128000000
     ports:
         - "127.0.0.1:29091:29091"
@@ -19,7 +19,6 @@ ambassador:
 agent:
     container_name: agent
     command:
-        - "--persist"
         - "--addr"
         - "0.0.0.0:29092"
         - "--advertise"
@@ -28,7 +27,7 @@ agent:
         - "/debug/docker/swarm/nodes"
         - "etcd://discovery:2379"
     env_file: /etc/environ
-    image: jeffjen/docker-monitor:v_34
+    image: jeffjen/docker-monitor:v_37
     links:
         - ambassador:discovery
         - ambassador:localhost
