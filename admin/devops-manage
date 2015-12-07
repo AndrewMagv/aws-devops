@@ -1,5 +1,13 @@
 #!/bin/bash
 
+CLUSTER=
+
+case ${1} in
+    --cluster)
+        shift 1; CLUSTER=${1}; shift 1
+        ;;
+esac
+
 if [ -z ${CLUSTER} ]; then
     echo "I need a CLUSTER identity"
     exit 1

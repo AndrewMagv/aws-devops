@@ -1,0 +1,14 @@
+#!/bin/bash
+
+CLUSTER=debug
+
+case ${1} in
+    --cluster)
+        shift 1; CLUSTER=${1}; shift 1
+        ;;
+esac
+
+etcdctl ls /${CLUSTER}/docker/ambassador/nodes | while read one;
+do
+    ambctl --host $(basename ${one}) "$@"
+done

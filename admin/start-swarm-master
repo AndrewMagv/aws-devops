@@ -1,5 +1,19 @@
 #!/bin/bash
 
+CLUSTER=
+STRATEGY=spread
+
+while [ $# -gt 0 ]; do
+    case ${1} in
+        --cluster)
+            shift 1; CLUSTER=${1}; shift 1
+            ;;
+        --strategy)
+            shift 1; STRATEGY=${1}; shift 1
+            ;;
+    esac
+done
+
 if [ -z ${CLUSTER} ]; then
     echo "I need a CLUSTER identity"
     exit 1
