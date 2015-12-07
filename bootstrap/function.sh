@@ -116,14 +116,10 @@ sed -i "s_@CLUSTER@_${CLUSTER}_; s_@MYNAME@_${DOCKER_REGISTRY_USER}_; s_@MYPASS@
 
 launch-agents() {
 AmassadorIP=
-if [ -z ${EC2_PUBLIC_IPV4}]; then
-    if [ -z ${EC2_PRIVAITE_IPV4} ]; then
-        AmassadorIP="127.0.0.1"
-    else
-        AmassadorIP=${EC2_PRIVAITE_IPV4}
-    fi
+if [ -z ${EC2_PRIVAITE_IPV4} ]; then
+    AmassadorIP="127.0.0.1"
 else
-    AmassadorIP=${EC2_PUBLIC_IPV4}
+    AmassadorIP=${EC2_PRIVAITE_IPV4}
 fi
 
 AgentIP=
