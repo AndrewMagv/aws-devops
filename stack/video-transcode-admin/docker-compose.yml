@@ -8,7 +8,7 @@ dashboard:
     labels:
         service: /srv/video-transcode-admin/main
         port: "80"
-        proxy: '[{"name": "broker", "net": "tcp", "src": ":20080", "srv": "/srv/wowza/live/broker"}, {"name": "metadata", "net": "tcp", "src": ":6379", "srv": "/srv/redis/video-transcode-admin"}]'
+        proxycfg: "/proxy/video-transcode-admin/main"
     ports:
         - "80:80"
     restart: always
