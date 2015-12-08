@@ -3,8 +3,8 @@ dashboard:
     environment:
         ORIGIN: "videoin-mzplus-com"
     external_links:
-        - ambassador:localhost
-    image: magvlab/video-transcode-admin:v_96
+        - ambassador
+    image: magvlab/video-transcode-admin:v_97
     labels:
         service: /srv/video-transcode-admin/main
         port: "80"
