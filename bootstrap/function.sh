@@ -40,6 +40,8 @@ service docker start
 # FIXME: better way to confirm docker daemon started
 while ! docker info &>/dev/null; do sleep 3; done
 
+docker network create --driver bridge isolated_nw
+
 docker run -d --restart=always --name logrotate \
     -v /var/lib/docker/containers:/var/lib/docker/containers:rw \
     tutum/logrotate
@@ -129,7 +131,7 @@ else
     AgentIP=${EC2_PRIVAITE_IPV4}
 fi
 
-docker run -d --restart=always --name ambassador -m 128M \
+docker run -d --restart=always --net=isolated_nw --name ambassador -m 128M \
     --env-file /etc/environment \
     -p 29091:29091 \
     jeffjen/docker-ambassador:${AMBASSADOR_VERION} \
@@ -139,7 +141,7 @@ docker run -d --restart=always --name ambassador -m 128M \
         --proxy '{"name": "discovery", "net": "tcp", "src": ":2379", "dst": ["10.0.0.253:2379", "10.0.2.185:2379", "10.0.1.38:2379"]}' \
         etcd://10.0.0.253:2379,10.0.2.96:2379,10.0.1.38:2379
 
-docker run -d --restart=always --name agent -m 128M --link ambassador:discovery --link ambassador:localhost \
+docker run -d --restart=always --net=isolated_nw --name agent -m 128M \
     --env-file /etc/environment \
     -p 29092:29092 \
     -v /var/run/docker.sock:/var/run/docker.sock \
@@ -147,5 +149,5 @@ docker run -d --restart=always --name agent -m 128M --link ambassador:discovery 
         --addr 0.0.0.0:29092 \
         --prefix ${CLUSTER}/docker/swarm/nodes \
         --advertise ${AgentIP}:2375 \
-        etcd://discovery:2379
+        etcd://ambassador:2379
 }

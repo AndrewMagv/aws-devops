@@ -2,13 +2,12 @@ dashboard:
     command: "tcp://0.0.0.0:80"
     environment:
         ORIGIN: "videoin-mzplus-com"
-    external_links:
-        - ambassador
     image: magvlab/video-transcode-admin:v_97
     labels:
         service: /srv/video-transcode-admin/main
         port: "80"
         proxycfg: "/proxy/video-transcode-admin/main"
+    net: isolated_nw
     ports:
         - "80:80"
     restart: always
