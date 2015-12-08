@@ -15,6 +15,7 @@ ambassador:
         LOG_LEVEL: DEBUG
     image: jeffjen/docker-ambassador:v_30
     mem_limit: 128000000
+    net: isolated_nw
     ports:
         - "29091:29091"
 
