@@ -30,9 +30,8 @@ agent:
         - "etcd://ambassador:2379"
     env_file: /etc/environ
     image: jeffjen/docker-monitor:v_39
-    links:
-        - ambassador
     mem_limit: 128000000
+    net: isolated_nw
     ports:
         - "29092:29092"
     volumes:
