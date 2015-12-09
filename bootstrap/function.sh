@@ -134,7 +134,7 @@ fi
 docker run -d --restart=always --net=isolated_nw --name ambassador -m 128M \
     --env-file /etc/environment \
     -p 29091:29091 \
-    jeffjen/docker-ambassador:${AMBASSADOR_VERION} \
+    jeffjen/ambd:${AMBASSADOR_VERION} \
         --addr 0.0.0.0:29091 \
         --prefix ${CLUSTER}/docker/ambassador/nodes \
         --advertise ${AmassadorIP}:29091 \
