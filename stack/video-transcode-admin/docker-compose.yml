@@ -1,13 +1,15 @@
 dashboard:
-    command: "tcp://0.0.0.0:80"
+    command: "tcp://0.0.0.0:8080"
     environment:
         ORIGIN: "videoin-mzplus-com"
-    image: magvlab/video-transcode-admin:v_97
+    image: magvlab/video-transcode-admin:v_99
     labels:
         service: /srv/video-transcode-admin/main
-        port: "80"
+        port: "8080"
         proxycfg: "/proxy/video-transcode-admin/main"
+        probe_type: "web"
+        probe_endpoint: "/info"
     net: isolated_nw
     ports:
-        - "80:80"
+        - "8080:8080"
     restart: always
