@@ -3,17 +3,17 @@ ambassador:
     command:
         - "--addr"
         - "0.0.0.0:29091"
+        - "--cluster"
+        - "debug"
         - "--advertise"
-        - "192.168.1.120:29091"
-        - "--prefix"
-        - "/debug/docker/ambassador/nodes"
+        - "192.168.1.123:29091"
         - "--proxy"
-        - '{"name": "discovery", "net": "tcp", "src": ":2379", "dst": ["192.168.1.109:2379"]}'
-        - "etcd://192.168.1.109:2379"
+        - '{"name": "discovery", "net": "tcp", "src": ":2379", "dst": ["192.168.1.86:2379"]}'
+        - "etcd://192.168.1.86:2379"
     env_file: /etc/environ
     environment:
         LOG_LEVEL: DEBUG
-    image: jeffjen/ambd:v_40
+    image: jeffjen/ambd:v_53
     mem_limit: 128000000
     net: isolated_nw
     ports:
@@ -24,13 +24,13 @@ agent:
     command:
         - "--addr"
         - "0.0.0.0:29092"
+        - "--cluster"
+        - "debug"
         - "--advertise"
-        - "192.168.1.120:2375"
-        - "--prefix"
-        - "/debug/docker/swarm/nodes"
+        - "192.168.1.123:2375"
         - "etcd://ambassador:2379"
     env_file: /etc/environ
-    image: jeffjen/docker-monitor:v_39
+    image: jeffjen/docker-monitor:v_45
     mem_limit: 128000000
     net: isolated_nw
     ports:
