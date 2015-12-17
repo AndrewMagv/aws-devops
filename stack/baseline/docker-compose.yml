@@ -13,7 +13,7 @@ ambassador:
     env_file: /etc/environ
     environment:
         LOG_LEVEL: DEBUG
-    image: jeffjen/ambd:v_53
+    image: jeffjen/ambd:v_56
     mem_limit: 128000000
     net: isolated_nw
     ports:
