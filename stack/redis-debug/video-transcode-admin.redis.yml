@@ -4,14 +4,16 @@ redis-001:
     labels:
         service: /srv/redis/video-transcode-admin/nodes
         port: "6379"
+        probe_type: "redis"
     net: host
 
 redis-002:
-    command: "server --port 7379 --timeout 0 --slaveof 10.0.2.15 6379"
+    command: "server --port 7379 --timeout 0 --slaveof 127.0.0.1 6379"
     image: magvlab/redis-brick:v_11
     labels:
         service: /srv/redis/video-transcode-admin/nodes
         port: "7379"
+        probe_type: "redis"
     net: host
 
 sentinel-001:
@@ -20,6 +22,7 @@ sentinel-001:
     labels:
         service: /srv/redis/video-transcode-admin/sentinels
         port: "26379"
+        probe_type: "sentinel"
     net: host
 
 sentinel-002:
@@ -28,6 +31,7 @@ sentinel-002:
     labels:
         service: /srv/redis/video-transcode-admin/sentinels
         port: "26378"
+        probe_type: "sentinel"
     net: host
 
 sentinel-003:
@@ -36,4 +40,5 @@ sentinel-003:
     labels:
         service: /srv/redis/video-transcode-admin/sentinels
         port: "26377"
+        probe_type: "sentinel"
     net: host
