@@ -13,7 +13,7 @@ ambassador:
     env_file: /etc/environ
     environment:
         LOG_LEVEL: DEBUG
-    image: jeffjen/ambd:v_56
+    image: jeffjen/ambd:v_57
     mem_limit: 128000000
     net: isolated_nw
     ports:
@@ -28,9 +28,11 @@ agent:
         - "debug"
         - "--advertise"
         - "192.168.1.123:2375"
+        - "--url"
+        - "https://hooks.slack.com/services/1234/1234/123456789"
         - "etcd://ambassador:2379"
     env_file: /etc/environ
-    image: jeffjen/docker-monitor:v_45
+    image: jeffjen/docker-monitor:v_57
     mem_limit: 128000000
     net: isolated_nw
     ports:
