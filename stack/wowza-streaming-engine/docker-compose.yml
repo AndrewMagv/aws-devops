@@ -5,6 +5,8 @@ agent:
         service: /srv/wowza/live/agent
         port: "20080"
         proxy: '[{"name": "livestream", "net": "tcp4", "src": ":6379", "srv": "/srv/redis/livestream"}]'
+        probe_type: "web"
+        probe_endpoint: "/info"
     net: isolated_nw
     ports:
         - "20080:20080"
@@ -16,6 +18,7 @@ engine:
         service: /srv/wowza/live/engine
         port: "80"
         proxy: '[{"name": "livestream", "net": "tcp4", "src": ":6379", "srv": "/srv/redis/livestream"}]'
+        probe_type: "web"
     net: isolated_nw
     ports:
         - "80:80"
