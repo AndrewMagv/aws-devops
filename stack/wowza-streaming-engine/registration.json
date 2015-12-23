@@ -1,0 +1,10 @@
+{
+    "Records": [
+        {
+            "Invoke": {
+                "AutoScalingGroupName": "live-stream-engine",
+                "Event": "register"
+            }
+        }
+    ]
+}
