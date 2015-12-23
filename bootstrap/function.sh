@@ -4,6 +4,21 @@ get() {
 curl -sSL -f --connect-timeout 1 http://169.254.169.254/latest/meta-data/${1} || echo
 }
 
+config-envfile() {
+    EC2_INSTANCE_ID=`get instance-id`
+    EC2_AVAIL_ZONE="`get placement/availability-zone`"
+    EC2_PUBLIC_HOSTNAME="`get public-hostname`"
+    EC2_PUBLIC_IPV4="`get public-ipv4`"
+    EC2_PRIVAITE_IPV4=`get local-ipv4`
+    EC2_REGION="`echo \"${EC2_AVAIL_ZONE}\" | sed -e 's:\([0-9][0-9]*\)[a-z]*\$:\\1:'`"
+    echo NODE_NAME=${EC2_INSTANCE_ID} >>/etc/environment
+    echo NODE_AVAIL_ZONE=${EC2_AVAIL_ZONE} >>/etc/environment
+    echo NODE_REGION=${EC2_REGION} >>/etc/environment
+    echo NODE_PUBLIC_HOSTNAME=${EC2_PUBLIC_HOSTNAME} >>/etc/environment
+    echo NODE_PUBLIC_IPV4=${EC2_PUBLIC_IPV4} >>/etc/environment
+    echo NODE_PRIVATE_IPV4=${EC2_PRIVAITE_IPV4} >>/etc/environment
+}
+
 get-docker-engine() {
 # Setup docker engine
 truncate -s0 /etc/apt/sources.list.d/docker.list
@@ -149,5 +164,7 @@ docker run -d --restart=always --net=isolated_nw --name agent -m 128M \
         --addr 0.0.0.0:29092 \
         --cluster ${CLUSTER} \
         --advertise ${AgentIP}:2375 \
+        --url ${AGENT_NOTIFICATION_URI} \
+        --channel ${AGENT_NOTIFICATION_CHANNEL} \
         etcd://ambassador:2379
 }

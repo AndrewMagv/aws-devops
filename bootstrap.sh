@@ -11,6 +11,8 @@ eval "`curl -sSL ${DEVOPS_URI}/bootstrap/function.sh`"
 
 AMBASSADOR_VERION=latest
 AGENT_VERION=latest
+AGENT_NOTIFICATION_URI=
+AGENT_NOTIFICATION_CHANNEL="#random"
 CLUSTER=
 COMMAND="$@"
 ROLE=
@@ -44,6 +46,12 @@ while [ $# -gt 0 ]; do
         --agent)
             shift 1; AGENT_VERION=${1}; shift 1
             ;;
+        --agent-notify-uri)
+            shift 1; AGENT_NOTIFICATION_URI=${1}; shift 1
+            ;;
+        --agent-notify-channel)
+            shift 1; AGENT_NOTIFICATION_CHANNEL=${1}; shift 1
+            ;;
         *)
             echo "Unexpected option; bootstrap ${COMMAND}"
             exit 1
@@ -54,18 +62,7 @@ done
 # BEGIN configuration
 
 if [ "${ENVFILE}" = "Y" ]; then
-    EC2_INSTANCE_ID=`get instance-id`
-    EC2_AVAIL_ZONE="`get placement/availability-zone`"
-    EC2_PUBLIC_HOSTNAME="`get public-hostname`"
-    EC2_PUBLIC_IPV4="`get public-ipv4`"
-    EC2_PRIVAITE_IPV4=`get local-ipv4`
-    EC2_REGION="`echo \"${EC2_AVAIL_ZONE}\" | sed -e 's:\([0-9][0-9]*\)[a-z]*\$:\\1:'`"
-    echo NODE_NAME=${EC2_INSTANCE_ID} >>/etc/environment
-    echo NODE_AVAIL_ZONE=${EC2_AVAIL_ZONE} >>/etc/environment
-    echo NODE_REGION=${EC2_REGION} >>/etc/environment
-    echo NODE_PUBLIC_HOSTNAME=${EC2_PUBLIC_HOSTNAME} >>/etc/environment
-    echo NODE_PUBLIC_IPV4=${EC2_PUBLIC_IPV4} >>/etc/environment
-    echo NODE_PRIVATE_IPV4=${EC2_PRIVAITE_IPV4} >>/etc/environment
+    config-envfile
 fi
 
 # Configure system
