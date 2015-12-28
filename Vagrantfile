@@ -37,5 +37,8 @@ Vagrant.configure(2) do |config|
     config.ssh.forward_x11 = true
 
     # bootstarp script
-    config.vm.provision "shell", path: "bootstrap.sh --env --reboot --swap 2G --dockeruser vagrant"
+    config.vm.provision "shell" do |s|
+        s.path = "bootstrap.sh"
+        s.args = ["--env", "--reboot", "--swap", "2G", "--dockeruser", "vagrant"]
+    end
 end
