@@ -1,8 +1,6 @@
 #!/bin/bash
 set -ex
 
-DEVOPS_URI="https://raw.githubusercontent.com/AndrewMagv/aws-devops/master"
-
 # Install admin tool
 apt-get update && apt-get install -y curl htop lvm2 ntp
 
@@ -10,6 +8,7 @@ apt-get update && apt-get install -y curl htop lvm2 ntp
 if [ -f bootstrap/function.sh ]; then
 source bootstrap/function.sh
 else
+DEVOPS_URI="https://raw.githubusercontent.com/AndrewMagv/aws-devops/master"
 eval "`curl -sSL ${DEVOPS_URI}/bootstrap/function.sh`"
 fi
 
@@ -23,13 +22,14 @@ SWAPSIZE="4G"
 REBOOT_NOW="N"
 ENVFILE="N"
 TRANSPARENT_HUGE_PAGE="N"
+ENABLE_DOCKER_USER=
 while [ $# -gt 0 ]; do
     case ${1} in
         --adduser)
             shift 1; useradd ${1}; shift 1
             ;;
         --dockeruser)
-            shift 1; usermod -aG docker ${1}; shift 1
+            shift 1; ENABLE_DOCKER_USER="${ENABLE_DOCKER_USER} ${1}"; shift 1
             ;;
         --swap)
             shift 1; SWAPSIZE=${1}; shift 1
@@ -79,6 +79,11 @@ config-swap
 
 # Install docker
 [ -x /usr/bin/docker ] || get-docker-engine
+
+# Enable users
+for u in ${ENABLE_DOCKER_USER}; do
+    usermod -aG docker ${u}
+done
 
 # Configure docker engine
 config-docker-engine
