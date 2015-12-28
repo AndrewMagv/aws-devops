@@ -7,7 +7,11 @@ DEVOPS_URI="https://raw.githubusercontent.com/AndrewMagv/aws-devops/master"
 apt-get update && apt-get install -y curl htop lvm2 ntp
 
 # source utility file
+if [ -f bootstrap/function.sh ]; then
+source bootstrap/function.sh
+else
 eval "`curl -sSL ${DEVOPS_URI}/bootstrap/function.sh`"
+fi
 
 AMBASSADOR_VERION=latest
 AGENT_VERION=latest
@@ -15,7 +19,6 @@ AGENT_NOTIFICATION_URI=
 AGENT_NOTIFICATION_CHANNEL="#random"
 CLUSTER=
 COMMAND="$@"
-ROLE=
 SWAPSIZE="4G"
 REBOOT_NOW="N"
 ENVFILE="N"
@@ -23,7 +26,10 @@ TRANSPARENT_HUGE_PAGE="N"
 while [ $# -gt 0 ]; do
     case ${1} in
         --adduser)
-            shift 1; ROLE=${1}; useradd ${ROLE}; shift 1
+            shift 1; useradd ${1}; shift 1
+            ;;
+        --dockeruser)
+            shift 1; usermod -aG docker ${1}; shift 1
             ;;
         --swap)
             shift 1; SWAPSIZE=${1}; shift 1
