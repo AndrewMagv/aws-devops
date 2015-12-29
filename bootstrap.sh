@@ -80,6 +80,9 @@ config-swap
 # Install docker
 [ -x /usr/bin/docker ] || get-docker-engine
 
+# Install toolkit
+get-toolkit
+
 # Enable users
 for u in ${ENABLE_DOCKER_USER}; do
     usermod -aG docker ${u}
