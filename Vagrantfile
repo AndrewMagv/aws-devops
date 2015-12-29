@@ -27,9 +27,11 @@ Vagrant.configure(2) do |config|
         vb.cpus = "2"
         vb.memory = "1024"
 
-        # Setup additional block device for docker thinpool
-        vb.customize ['createhd', '--filename', './thin.vdi', '--size', 10 * 1024]
-        vb.customize ['storageattach', :id, '--storagectl', 'SATAController', '--port', 1, '--device', 0, '--type', 'hdd', '--medium', './thin.vdi']
+        unless File.exist?('thin.vdi')
+            # Setup additional block device for docker thinpool
+            vb.customize ['createhd', '--filename', './thin.vdi', '--size', 10 * 1024]
+            vb.customize ['storageattach', :id, '--storagectl', 'SATAController', '--port', 1, '--device', 0, '--type', 'hdd', '--medium', './thin.vdi']
+        end
     end
 
     # ssh_config
