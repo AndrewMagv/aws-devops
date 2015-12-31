@@ -151,7 +151,7 @@ else
     AgentIP=${EC2_PRIVAITE_IPV4}
 fi
 
-docker create -d --restart=always --net=isolated_nw --name ambassador -m 128M \
+docker create --restart=always --net=isolated_nw --name ambassador -m 128M \
     --env-file /etc/environment \
     -p 29091:29091 \
     jeffjen/ambd:${AMBASSADOR_VERION} \
@@ -161,7 +161,7 @@ docker create -d --restart=always --net=isolated_nw --name ambassador -m 128M \
         --proxy2discovery \
         ${ETCD_CLUSTER_ENDPOINTS}
 
-docker create -d --restart=always --net=isolated_nw --name agent -m 128M \
+docker create --restart=always --net=isolated_nw --name agent -m 128M \
     --env-file /etc/environment \
     -p 29092:29092 \
     -v /var/run/docker.sock:/var/run/docker.sock \
