@@ -159,7 +159,7 @@ docker create -d --restart=always --net=isolated_nw --name ambassador -m 128M \
         --cluster ${CLUSTER} \
         --advertise ${AmassadorIP}:29091 \
         --proxy2discovery \
-        etcd://10.0.0.253:2379,10.0.2.96:2379,10.0.1.38:2379
+        ${ETCD_CLUSTER_ENDPOINTS}
 
 docker create -d --restart=always --net=isolated_nw --name agent -m 128M \
     --env-file /etc/environment \

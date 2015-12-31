@@ -4,19 +4,13 @@ set -ex
 # Install admin tool
 apt-get update && apt-get install -y curl htop lvm2 ntp
 
-# source utility file
-if [ -f bootstrap/function.sh ]; then
-source bootstrap/function.sh
-else
-DEVOPS_URI="https://raw.githubusercontent.com/AndrewMagv/aws-devops/master"
-eval "`curl -sSL ${DEVOPS_URI}/bootstrap/function.sh`"
-fi
-
+BOOTSTRAP_VERSION=master
 AMBASSADOR_VERION=latest
 AGENT_VERION=latest
 AGENT_NOTIFICATION_URI=
 AGENT_NOTIFICATION_CHANNEL="#random"
 CLUSTER=
+ETCD_CLUSTER_ENDPOINTS="etcd://10.0.0.253:2379,10.0.2.96:2379,10.0.1.38:2379"
 COMMAND="$@"
 SWAPSIZE="4G"
 REBOOT_NOW="N"
@@ -25,6 +19,9 @@ TRANSPARENT_HUGE_PAGE="N"
 ENABLE_DOCKER_USER=
 while [ $# -gt 0 ]; do
     case ${1} in
+        --version)
+            shift 1; BOOTSTRAP_VERSION=${1}; shift 1
+            ;;
         --adduser)
             shift 1; useradd ${1}; shift 1
             ;;
@@ -46,6 +43,9 @@ while [ $# -gt 0 ]; do
         --cluster)
             shift 1; CLUSTER=${1}; shift 1
             ;;
+        --discovery)
+            shift 1; ETCD_CLUSTER_ENDPOINTS=${1}; shift 1
+            ;;
         --ambassador)
             shift 1; AMBASSADOR_VERION=${1}; shift 1
             ;;
@@ -64,6 +64,15 @@ while [ $# -gt 0 ]; do
             ;;
     esac
 done
+
+# source utility file
+if [ -f bootstrap/function.sh ]; then
+source bootstrap/function.sh
+else
+ROOT_URI="https://raw.githubusercontent.com/AndrewMagv/aws-devops"
+DEVOPS_URI="${ROOT_URI}/${BOOTSTRAP_VERSION}"
+eval "`curl -sSL ${DEVOPS_URI}/bootstrap/function.sh`"
+fi
 
 # BEGIN configuration
 
