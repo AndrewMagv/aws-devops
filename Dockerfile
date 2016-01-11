@@ -9,11 +9,18 @@ RUN apt-get update && apt-get install -y \
     vim \
     zip
 
-RUN apt-get clean
+# install command line json parser
+RUN curl -sSL http://stedolan.github.io/jq/download/linux64/jq -o /usr/local/bin/jq
+RUN chmod +x /usr/local/bin/jq
+
+# install template parse and generator
+RUN curl -sSL https://github.com/jeffjen/generate/releases/download/v1.0/generate -o /usr/local/bin/generate
+RUN chmod +x /usr/local/bin/generate
 
 # install docker client
 RUN curl -sSL https://get.docker.com/builds/Linux/x86_64/docker-latest > /usr/local/bin/docker
 RUN chmod +x /usr/local/bin/docker
+
 # install docker-compose for local service stack orchestration
 RUN curl -sSL https://github.com/docker/compose/releases/download/1.5.1/docker-compose-Linux-x86_64 > /usr/local/bin/docker-compose
 RUN chmod +x /usr/local/bin/docker-compose
@@ -23,7 +30,9 @@ ENV DOCKER_TLS_VERIFY ""
 ENV DOCKER_CERT_PATH ""
 
 # install etcdctl
-COPY etcdctl /usr/local/bin/etcdctl
+RUN curl -sSL https://github.com/coreos/etcd/releases/download/v2.2.1/etcd-v2.2.1-linux-amd64.tar.gz | tar \
+    --transform "s@etcd-v2.2.1-linux-amd64@./@" \
+    -zxf - -C /usr/local/bin -- etcd-v2.2.1-linux-amd64/etcdctl
 
 ENV ETCDCTL_ENDPOINT ""
 
@@ -33,12 +42,8 @@ RUN curl -sSL https://bootstrap.pypa.io/get-pip.py | python -
 # install common python packages
 RUN pip install awscli virtualenv
 
-# install command line json parser
-RUN curl -sSL http://stedolan.github.io/jq/download/linux64/jq -o /usr/local/bin/jq
-RUN chmod +x /usr/local/bin/jq
+RUN apt-get clean
 
 COPY . /aws-devops
-
 WORKDIR /aws-devops
-
 ENV VERSION latest
