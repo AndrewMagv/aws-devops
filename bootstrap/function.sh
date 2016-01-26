@@ -19,11 +19,23 @@ config-envfile() {
     echo NODE_PRIVATE_IPV4=${EC2_PRIVAITE_IPV4} >>/etc/environment
 }
 
+get-docker-engine-cs() {
+# Setup docker engine
+curl -s 'https://sks-keyservers.net/pks/lookup?op=get&search=0xee6d536cf7dc86e2d7d56f59a178ac6c6238f52e' | apt-key add --import
+apt-get update && apt-get install -y \
+    apt-transport-https \
+    linux-image-extra-$(uname -r)
+echo "deb https://packages.docker.com/1.9/apt/repo ubuntu-trusty main" | tee /etc/apt/sources.list.d/docker.list
+apt-get update && apt-get install -y docker-engine
+}
+
 get-docker-engine() {
 # Setup docker engine
-truncate -s0 /etc/apt/sources.list.d/docker.list
-apt-key adv --keyserver hkp://pgp.mit.edu:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
-echo "deb https://apt.dockerproject.org/repo ubuntu-trusty main" >>/etc/apt/sources.list.d/docker.list
+apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
+apt-get update && apt-get install -y \
+    apt-transport-https \
+    linux-image-extra-$(uname -r)
+echo "deb https://apt.dockerproject.org/repo ubuntu-trusty main" | tee /etc/apt/sources.list.d/docker.list
 apt-get update && apt-get install -y docker-engine
 }
 

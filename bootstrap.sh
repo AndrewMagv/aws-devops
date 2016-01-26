@@ -17,6 +17,7 @@ REBOOT_NOW="N"
 ENVFILE="N"
 TRANSPARENT_HUGE_PAGE="N"
 ENABLE_DOCKER_USER=
+INSATLL_DOCKER_ENGINE_CS="N"
 while [ $# -gt 0 ]; do
     case ${1} in
         --version)
@@ -27,6 +28,9 @@ while [ $# -gt 0 ]; do
             ;;
         --dockeruser)
             shift 1; ENABLE_DOCKER_USER="${ENABLE_DOCKER_USER} ${1}"; shift 1
+            ;;
+        --docker-engine-cs)
+            shift 1; INSATLL_DOCKER_ENGINE_CS="Y";
             ;;
         --swap)
             shift 1; SWAPSIZE=${1}; shift 1
@@ -87,7 +91,11 @@ config-system
 config-swap
 
 # Install docker
-[ -x /usr/bin/docker ] || get-docker-engine
+[ -x /usr/bin/docker ] || if [ "${INSATLL_DOCKER_ENGINE_CS}" = "N" ]; then
+    get-docker-engine
+else
+    get-docker-engine-cs
+fi
 
 # Install toolkit
 get-toolkit
