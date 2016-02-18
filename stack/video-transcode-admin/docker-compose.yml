@@ -1,8 +1,8 @@
-dashboard:
+dashboard_107:
     command: "tcp://0.0.0.0:8080"
     environment:
         ORIGIN: "videoin-mzplus-com"
-    image: magvlab/video-transcode-admin:v_100
+    image: magvlab/video-transcode-admin:v_107
     labels:
         service: /srv/video-transcode-admin/main
         port: "8080"
