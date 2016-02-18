@@ -24,6 +24,6 @@ if [ -z ${DISCOVERY_URI} ]; then
     exit 2
 fi
 
-docker run -d --restart=always --name ${CLUSTER} \
+docker run -d --restart=always --net=host --name ${CLUSTER} \
     swarm \
-    manage -H tcp://0.0.0.0:2375 --strategy ${STRATEGY} etcd://${DISCOVERY_URI}/${CLUSTER}
+    manage -H tcp://0.0.0.0:12375 --strategy ${STRATEGY} etcd://${DISCOVERY_URI}/${CLUSTER}
